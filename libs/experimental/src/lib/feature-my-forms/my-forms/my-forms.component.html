@@ -1,0 +1,187 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit($event)">
+  <h4 class="h4 mb16">Консультация по обучению</h4>
+
+  <div class="form-grid">
+    <label class="tt-control-label mb16">
+      Имя
+      <input
+        formControlName="name"
+        class="tt-input"
+        type="text"
+        placeholder="Введите Имя"
+      />
+      <span class="validation">Это поле обязательно!</span>
+      @if (form.controls.name.touched &&
+      form.controls.name.hasError('startsWith')) {
+      <span>{{ form.controls.name.getError('startsWith')?.message }}</span>
+      } @if (form.controls.name.touched &&
+      form.controls.name.hasError('nameValid')) {
+      <span class="req-message">{{
+        form.controls.name.getError('nameValid')?.message
+      }}</span>
+      }
+    </label>
+
+    <label class="tt-control-label mb16">
+      Фамилия
+      <input
+        formControlName="lastName"
+        class="tt-input"
+        type="text"
+        placeholder="Введите Фамилию"
+      />
+    </label>
+  </div>
+
+  <label class="tt-control-label mb16">
+    Эл.Почта
+    <input
+      formControlName="email"
+      class="tt-input"
+      type="text"
+      [maskito]="emailMaskOptions"
+      placeholder="Введите почту"
+    />
+    @if (form.controls.email.touched &&
+    form.controls.email.hasError('required')) {
+    <span class="req-message">Это поле обязательно!</span>
+    } @if (form.controls.email.touched && form.controls.email.hasError('email'))
+    {
+    <span class="req-message">Не корректный email</span>
+    }
+  </label>
+
+  <div>
+    <div style="display: flex; justify-content: space-between">
+      <h4 class="h4 mb16">Дополнительная настройка</h4>
+      <button
+        type="button"
+        class="btn"
+        style="width: 50px"
+        (click)="addSettings()"
+      >
+        +
+      </button>
+    </div>
+
+    @for (group of form.controls.extrainformation.controls; track group; let i =
+    $index) {
+    <div [formGroup]="group">
+      <label class="tt-control-label mb16">
+        Профессия
+        <select
+          [ngClass]="{
+            placeholder:
+              form.controls.extrainformation.at(0).get('jobs')?.value === ''
+          }"
+          class="tt-input"
+          formControlName="jobs"
+        >
+          <option value="" disabled hidden selected>Выберите профессию</option>
+          @for (job of jobsOptions; track job.value) {
+          <option [value]="job.value">{{ job.label }}</option>
+          }
+        </select>
+      </label>
+
+      <div class="form-grid">
+        <label class="tt-control-label mb16">
+          Опыт
+          <select
+            [ngClass]="{
+              placeholder:
+                form.controls.extrainformation.at(0).get('experience')
+                  ?.value === ''
+            }"
+            class="tt-input"
+            formControlName="experience"
+          >
+            <option value="" disabled hidden selected>Выберите опыт</option>
+            @for (grade of experienceOptions; track grade.value) {
+            <option [value]="grade.value">{{ grade.label }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="tt-control-label mb16">
+          Дата звонка
+          <input
+            formControlName="callDate"
+            class="tt-input"
+            [maskito]="dateMaskOptions"
+            type="text"
+            placeholder="Введите дату"
+          />
+        </label>
+      </div>
+      <label class="tt-control-label mb16">
+        Номер телефона
+        <input
+          maxlength="18"
+          minlength="18"
+          formControlName="phoneNumber"
+          class="tt-input"
+          type="tel"
+          [maskito]="phoneMaskOptions"
+          placeholder="+7"
+        />
+        @if (group.controls.phoneNumber.touched &&
+        group.controls.phoneNumber.hasError('required')) {
+        <span class="req-message">Это поле обязательно!</span>
+        } @if (group.controls.phoneNumber.touched &&
+        group.controls.phoneNumber.hasError('minlength')) {
+        <span class="req-message">Некорректный номер!</span>
+        }
+      </label>
+
+      <div style="display: flex; justify-content: space-between">
+        <h4 class="h6 mt20">Выберите(возможный) период обучения</h4>
+      </div>
+
+      <div class="two-columns" [formGroup]="form.controls.dateRange">
+        <label class="tt-control-label mb16">
+          От
+          <input formControlName="from" class="tt-input" type="date" />
+        </label>
+
+        <label class="tt-control-label mb16">
+          До
+          <input formControlName="to" class="tt-input" type="date" />
+        </label>
+      </div>
+
+      @if (form.controls.dateRange.touched &&
+      form.controls.dateRange.hasError('dateRange')) {
+      <span class="req-message">{{
+        form.controls.dateRange.getError('dateRange')?.message
+      }}</span>
+      }
+
+      <div [formGroup]="form.controls.complexitys">
+        <h4 class="h4 mb16">Дополнително</h4>
+
+        <div style="display: grid; grid-gap: 16px" class="mb20">
+          @for (control of this.form.controls.complexitys.controls | keyvalue:
+          sort; track control; let i = $index) {
+          <label>
+            {{ complexitys[i].language }}
+            <input type="checkbox" [formControlName]="control.key" />
+          </label>
+          }
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="btn"
+        style="grid-column-start: 1; grid-column-end: 3"
+        (click)="deleteSettings(i)"
+      >
+        Удалить
+      </button>
+    </div>
+    }
+  </div>
+
+  <button class="btn btn-shadow mt20" type="submit">Подтвердить</button>
+</form>

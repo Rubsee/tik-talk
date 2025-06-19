@@ -1,0 +1,10 @@
+.avatar-circle-img {
+  height: 112px;
+  width: 112px;
+  border-radius: 50%;
+}
+
+:host.size32 .avatar-circle-img {
+  height: 32px;
+  width: 32px;
+}

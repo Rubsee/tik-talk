@@ -1,0 +1,47 @@
+<img src="/assets/imgs/logo-small.png" alt="logo-small" class="ml16 mb20" />
+<nav>
+  <ul class="main-menu-list">
+    <li *ngFor="let menuItem of menuItems">
+      <a
+        class="menu-item"
+        [routerLink]="[menuItem.link]"
+        routerLinkActive="active"
+      >
+        <svg class="menu-icon" [icon]="menuItem.icon"></svg>
+        <span>{{ menuItem.label }}</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<p class="medium-text mb20">Подписчики</p>
+
+@for (profile of subscribers$ | async; track profile.id) {
+<app-subscriber-card [profile]="profile"> </app-subscriber-card>
+}
+
+<div class="mt20 to-subscribers">
+  <a [routerLink]="['/subscribers']" class="to-subscribers-link medium-text"
+    >Все подписчики</a
+  >
+  <svg icon="arrow" class="to-subscribers-icon"></svg>
+</div>
+
+<footer class="sidebar__footer">
+  @if (me(); as me) { @if (me.avatarUrl) {
+  <img
+    class="sidebar__footer-img"
+    [src]="me.avatarUrl | imgUrl"
+    alt="{{ me.lastName }}"
+  />
+  } @else {
+  <img class="sidebar__footer-img" src="/assets/imgs/avatar-palceholder.png" alt="{{ me.lastName }}" />
+  }
+
+  <div class="medium-text username-text">{{ me.username }}</div>
+
+  <a [routerLink]="['/settings']" class="settings-btn">
+    <svg class="settings-btn-icon" icon="settings"></svg>
+  </a>
+  }
+</footer>
