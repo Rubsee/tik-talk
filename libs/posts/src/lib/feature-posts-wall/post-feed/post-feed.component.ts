@@ -7,11 +7,12 @@ import {
 } from '@angular/core';
 
 import {firstValueFrom} from 'rxjs';
-import {MyDebounce} from "../../../../../shared/src/lib/data/helpers/decorators/mydebounce-decorator";
-import {PostService} from "../../data";
-import {PostComponent} from "@tt/posts";
+import {MyDebounce} from "@tt/shared";
+import {postActions, PostService, selectCreatedPosts} from "../../data";
 import {PostInputComponent} from "../../ui";
 import {GlobalStoreService} from "@tt/shared";
+import {PostComponent} from '../post/post.component';
+import {Store} from "@ngrx/store";
 
 
 @Component({
@@ -24,8 +25,10 @@ export class PostFeedComponent {
   postService = inject(PostService);
   hostElement = inject(ElementRef);
   r2 = inject(Renderer2);
+  store = inject(Store)
 
-  feed = this.postService.posts;
+  feed = this.store.selectSignal(selectCreatedPosts)
+  // feed = this.postService.posts;
   profile = inject(GlobalStoreService).me;
 
   @MyDebounce(300)
@@ -35,7 +38,7 @@ export class PostFeedComponent {
   }
 
   constructor() {
-    firstValueFrom(this.postService.fetchPosts());
+    this.store.dispatch(postActions.loadingPostEvents())
   }
 
   ngAfterViewInit() {
@@ -53,13 +56,21 @@ export class PostFeedComponent {
   onCreatePost(postText: string) {
     if (!postText) return;
 
-    firstValueFrom(
-      this.postService.createPost({
+    return this.store.dispatch(postActions.createPostEvents({
+      createPosts: {
         title: 'Крутой пост',
         content: postText,
-        authorId: this.profile()!.id,
-      })
-    ).then(() => {
-    });
+        authorId: this.profile()!.id
+      }
+    }))
+
+    // firstValueFrom(
+    //   this.postService.createPost({
+    //     title: 'Крутой пост',
+    //     content: postText,
+    //     authorId: this.profile()!.id,
+    //   })
+    // ).then(() => {
+    // });
   }
 }

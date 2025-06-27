@@ -1,9 +1,8 @@
-import { Component, inject } from '@angular/core';
-import { ProfileService } from '../../data/services/profile.service';
-import { Profile } from '../../../../../interfaces/src/lib/profile/profile.iterface';
-import { ProfileCardComponent } from '../../ui/profile-card/profile-card.component';
-import { ProfileFiltersComponent } from '../profile-filters/profile-filters.component';
-import { AsyncPipe } from '@angular/common';
+import {Component, inject} from '@angular/core';
+import {ProfileCardComponent} from '../../ui/profile-card/profile-card.component';
+import {ProfileFiltersComponent} from '../profile-filters/profile-filters.component';
+import {Store} from "@ngrx/store";
+import {selectFilteredProfiles} from "@tt/profile";
 
 @Component({
   selector: 'app-search-page',
@@ -12,8 +11,9 @@ import { AsyncPipe } from '@angular/common';
   styleUrl: './search-page.component.scss',
 })
 export class SearchPageComponent {
-  profileService = inject(ProfileService);
-  profiles = this.profileService.filteredProfiles;
+  store = inject(Store);
+  profiles = this.store.selectSignal(selectFilteredProfiles);
 
-  constructor() {}
+  constructor() {
+  }
 }

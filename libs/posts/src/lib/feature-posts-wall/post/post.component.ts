@@ -2,15 +2,14 @@ import {
   Component,
   inject,
   input,
-  OnInit,
-  signal,
+  OnInit, signal,
 } from '@angular/core';
 
 import {PostInputComponent, CommentComponent} from '../../ui';
-import {firstValueFrom} from 'rxjs';
-import {Post, PostComment, PostService} from "../../data";
+import {Post, postActions, PostComment, selectCommentsByPostId} from "../../data";
 import {SvgIconComponent, AvatarCircleComponent, DatetimePipe} from "@tt/common-ui";
 import {GlobalStoreService} from "@tt/shared";
+import {Store} from "@ngrx/store";
 
 
 @Component({
@@ -26,30 +25,28 @@ import {GlobalStoreService} from "@tt/shared";
   styleUrl: './post.component.scss',
 })
 export class PostComponent implements OnInit {
+  store = inject(Store);
+
   post = input<Post>();
   profile = inject(GlobalStoreService).me;
   comments = signal<PostComment[]>([]);
+  // comments = this.store.selectSignal(selectCommentsByPostId);
   isCommentInput = input(false);
 
-  postService = inject(PostService);
 
   async ngOnInit() {
     this.comments.set(this.post()!.comments);
+    // this.store.dispatch(postActions.getPostComments({postId: this.post()!.id}))
   }
 
-  async onCreateComment(commentText: string) {
-    firstValueFrom(
-      this.postService.createComment({
-        text: commentText,
-        authorId: this.profile()!.id,
-        postId: this.post()!.id,
+  onCreateComment(commentText: string) {
+    this.store.dispatch(postActions.createCommentEvents({
+        createComment: {
+          text: commentText,
+          authorId: this.profile()!.id,
+          postId: this.post()!.id
+        }
       })
-    ).then(async () => {
-      const comments: PostComment[] = await firstValueFrom(
-        this.postService.getCommentsByPostId(this.post()!.id)
-      );
-      this.comments.set(comments);
-    });
-    return;
+    )
   }
 }

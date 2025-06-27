@@ -6,8 +6,6 @@ import {ImgUrlPipe, SvgIconComponent} from "@tt/common-ui";
 import {ProfileService} from "@tt/profile";
 import {SubscriberCardComponent} from '../subscriber-card/subscriber-card.component';
 
-console.log(SvgIconComponent, SubscriberCardComponent, ImgUrlPipe, AsyncPipe)
-
 @Component({
   selector: 'app-sidebar',
   imports: [
